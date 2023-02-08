@@ -4,6 +4,7 @@ const path = require("path");
 const { open } = require("sqlite");
 const sqlite3 = require("sqlite3");
 const app = express();
+app.use(express.json())
 
 const dbPath = path.join(__dirname, "cricketTeam.db");
 
@@ -47,4 +48,19 @@ app.get("/player/", async (request, response) => {
   response.send(
     player.map((eachPlayer) => convertDbObjectToResponseObject(eachPlayer))
   );
+});
+
+app.post("/players/", async (request, response) => {
+  const playerDetails = request.body;
+  const { playerName, jerseyNumber, rose } = playerDetails;
+  const addQuery = `INSERT 
+         INTO 
+         cricket_team
+         (player_name, jersey_number, role) 
+         VALUES (
+        ${playerName},
+        ${jerseyNumber},
+        ${rose});`;
+  const dbResponse = await db.run(addQuery);
+  response.send("Player Added to Team");
 });
